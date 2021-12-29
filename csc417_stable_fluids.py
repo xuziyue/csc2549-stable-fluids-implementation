@@ -241,14 +241,14 @@ def interactive(user_inputs: ti.ext_arr(), forces: ti.template(), sources: ti.te
 
 # Update velocity field due to the change of forces
 @ti.kernel
-def apply_force(velocity_field: ti.template(), forces: ti.template()):
+def add_force(velocity_field: ti.template(), forces: ti.template()):
     for i, j in velocity_field:
         velocity_field[i, j] += dt * forces[i, j]
 
 
 # Update density field due to the change of sources
 @ti.kernel
-def apply_source(density_field: ti.template(), sources: ti.template()):
+def add_source(density_field: ti.template(), sources: ti.template()):
     for i, j in density_field:
         density_field[i, j] += dt * sources[i, j]
 
@@ -549,7 +549,7 @@ def dissipate(density_field: ti.template()):
 
 # Vstep
 def Vstep():
-    apply_force(U0, forces)
+    add_force(U0, forces)
     
     transport(U1, U0, U0)
     diffuse_velocity(U1)
@@ -559,7 +559,7 @@ def Vstep():
 
 # Sstep
 def Sstep():
-    apply_source(S0, sources)
+    add_source(S0, sources)
     
     transport(S1, S0, U1)
     if mode != 'picture':
